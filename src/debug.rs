@@ -1,13 +1,18 @@
+use std::{
+    sync::{Arc, Mutex},
+    thread::JoinHandle,
+};
+
 use crate::World;
 use bracket_lib::prelude::*;
 
 struct State {
-    world: World,
+    world: Arc<Mutex<World>>,
 }
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
-        for (y, rows) in self.world.data.iter().enumerate() {
+        for (y, rows) in self.world.lock().unwrap().data.iter().enumerate() {
             for (x, tile) in rows.iter().enumerate() {
                 match tile {
                     crate::Tile::Robot => ctx.print(x, y, "R"),
@@ -21,7 +26,7 @@ impl GameState for State {
 }
 
 /// Utility function for drawing the world
-pub fn draw_world(world: &World) {
+pub fn draw_world(world: &Arc<Mutex<World>>) {
     let context = BTermBuilder::simple(crate::WORLD_WIDTH, crate::WORLD_HEIGHT)
         .unwrap()
         .with_title("Robofood")

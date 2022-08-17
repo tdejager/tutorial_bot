@@ -1,4 +1,8 @@
-use std::{env, rc::Rc};
+use std::{
+    env,
+    rc::Rc,
+    sync::{Arc, Mutex, RwLock},
+};
 
 use bot_lib::{RobotMovement, World, WorldState, WorldUpdate};
 use tokio::{
@@ -71,11 +75,21 @@ async fn tcp_server() -> anyhow::Result<()> {
     }
 }
 
-fn main() {
-    let mut world = World::custom((10, 10), (10, 11));
-    bot_lib::debug::draw_world(&world);
-    world.move_robot(crate::RobotMovement::Left).unwrap();
-    bot_lib::debug::draw_world(&world);
+#[tokio::main]
+async fn main() {
+    let world = Arc::new(Mutex::new(World::custom((10, 10), (10, 11))));
+    let world_clone = world.clone();
+
+    tokio::spawn(async move {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        world_clone
+            .lock()
+            .unwrap()
+            .move_robot(crate::RobotMovement::Left)
+            .unwrap();
+        println!("Draw world 2");
+    });
+
     // Use this for debugging the world
-    //bot_lib::debug::draw_world(&world);
+    bot_lib::debug::draw_world(&world);
 }
