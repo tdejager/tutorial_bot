@@ -1,6 +1,6 @@
 use std::{env, rc::Rc};
 
-use bot_lib::{RobotMovement, World, WorldUpdate};
+use bot_lib::{RobotMovement, World, WorldState, WorldUpdate};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpListener,
@@ -72,7 +72,10 @@ async fn tcp_server() -> anyhow::Result<()> {
 }
 
 fn main() {
-
+    let mut world = World::custom((10, 10), (10, 11));
+    bot_lib::debug::draw_world(&world);
+    world.move_robot(crate::RobotMovement::Left).unwrap();
+    bot_lib::debug::draw_world(&world);
     // Use this for debugging the world
     //bot_lib::debug::draw_world(&world);
 }

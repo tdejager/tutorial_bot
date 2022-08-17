@@ -60,7 +60,7 @@ impl Default for World {
 
 impl World {
     /// Create a custom non-random world
-    fn custom(food: (usize, usize), robot: (usize, usize)) -> Self {
+    pub fn custom(food: (usize, usize), robot: (usize, usize)) -> Self {
         let (food_y, food_x) = food;
         let (robot_y, robot_x) = robot;
         let mut data = vec![vec![Tile::Empty; WORLD_WIDTH]; WORLD_HEIGHT];
@@ -141,7 +141,6 @@ mod tests {
     #[test]
     fn test_eat_food() {
         let mut world = World::custom((10, 10), (10, 11));
-        world.move_robot(crate::RobotMovement::Up).unwrap();
         assert_eq!(world.world_state(), WorldState::Searching);
         world.move_robot(crate::RobotMovement::Left).unwrap();
         assert_eq!(world.world_state(), WorldState::FoundFood);
