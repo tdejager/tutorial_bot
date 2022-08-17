@@ -1,7 +1,6 @@
 use std::{
     env,
-    rc::Rc,
-    sync::{Arc, Mutex, RwLock},
+    sync::{Arc, RwLock},
 };
 
 use bot_lib::{RobotMovement, World, WorldState, WorldUpdate};
@@ -10,7 +9,7 @@ use tokio::{
     net::TcpListener,
 };
 
-async fn tcp_server() -> anyhow::Result<()> {
+async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
     // Allow passing an address to listen on as the first argument of this
     // program, but otherwise we'll just set up our TCP listener on
     // 127.0.0.1:8080 for connections.
@@ -26,9 +25,6 @@ async fn tcp_server() -> anyhow::Result<()> {
 
     // Asynchronously wait for an inbound socket.
     let (mut socket, _) = listener.accept().await?;
-
-    // Create a World
-    let mut world = World::default();
 
     // This will represent the inbound size of the package
     let mut size = [0; std::mem::size_of::<usize>()];
@@ -57,10 +53,10 @@ async fn tcp_server() -> anyhow::Result<()> {
         // Deserialize using bincode
         let robot_movement: RobotMovement = bincode::deserialize(&robot_movement)?;
         // Move the actual robot
-        world.move_robot(robot_movement)?;
-        let state = world.world_state();
+        world.write().unwrap().move_robot(robot_movement)?;
+        let state = world.read().unwrap().world_state();
         let update = WorldUpdate {
-            world: world.clone(),
+            world: world.read().unwrap().clone(),
             world_state: state,
         };
 
@@ -75,21 +71,37 @@ async fn tcp_server() -> anyhow::Result<()> {
     }
 }
 
+/// This ensures that we are inside the tokio run-time
 #[tokio::main]
 async fn main() {
-    let world = Arc::new(Mutex::new(World::custom((10, 10), (10, 11))));
+    // This creates a World object inside an atomic reference counted struct inside a Mutex
+    // this creates a thread-safe datastructure to be able to update
+    // which is needed because we use it in both the GUI and the server potentially
+    // read more on this at: https://tokio.rs/tokio/tutorial/shared-state
+    let world = Arc::new(RwLock::new(World::custom((10, 10), (10, 11))));
     let world_clone = world.clone();
 
+    // This spawns a seperate tokio task
+    // Which is like a thread inside the tokio runtime
+    // UNCOMMENT THIS and COMMENT the next block to see simple movement
+    // tokio::spawn(async move {
+    //     // Sample of moving the robot
+    //     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+    //     world_clone
+    //         .write()
+    //         .unwrap()
+    //         .move_robot(crate::RobotMovement::Left)
+    //         .unwrap();
+    // });
+
+    // This spawns a seperate tokio task
+    // Which is like a thread inside the tokio runtime
     tokio::spawn(async move {
-        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-        world_clone
-            .lock()
-            .unwrap()
-            .move_robot(crate::RobotMovement::Left)
-            .unwrap();
-        println!("Draw world 2");
+        tcp_server(world_clone)
+            .await
+            .expect("error while running tcp server")
     });
 
-    // Use this for debugging the world
+    // Use this for debugging the world, this does not use async/await code
     bot_lib::debug::draw_world(&world);
 }
