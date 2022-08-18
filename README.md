@@ -6,7 +6,7 @@ The server has been made which is a TCP server, including a small debug GUI so t
 
 The `R` in the GUI represents the robot and the `F` is the food.
 
-![debug-gui](image/robot-gui.png)
+![debug-gui](robot-gui.png)
 
 ## Goal
 
