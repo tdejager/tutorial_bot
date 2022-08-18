@@ -39,4 +39,5 @@ Check the `Cargo.toml` file to check where the second binary is defined it can b
 1. There is a potential flaw in the code: for the synchronization primitives I'm using an `std::sync::RwLock` from the standard library. 
 Tokio also provides the same primitives but instead the blocking methods can be `.await`'ed. 
 Do you have an idea what problem this can cause and why?
+Look a the `test/async_examples.rs` to see the difference in usage.
 
