@@ -18,10 +18,10 @@ The datatypes can be serialized over the wire using [bincode](https://github.com
 
 ## Before starting
 
-Take a look at the `tests/async_examples.rs` which shows how the async/await code can be used in Rust.
+1. Take a look at the `tests/async_examples.rs` which shows how the async/await code can be used in Rust.
 This is similar to async code in Typescript or Python.
 It just scratches the surface especially with regards to borrowing but you can read more about that later.
-Maybe read the chapter from the book on error handling: [Error Handling](https://doc.rust-lang.org/stable/book/ch09-00-error-handling.html).
+2. Maybe read the chapter from the book on error handling: [Error Handling](https://doc.rust-lang.org/stable/book/ch09-00-error-handling.html).
 We are using [anyhow](https://docs.rs/anyhow/latest/anyhow/) for easy error handling.
 
 
