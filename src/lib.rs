@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod debug;
 
+// Constansts that dicate the world size
 const WORLD_HEIGHT: usize = 100;
 const WORLD_WIDTH: usize = 100;
 
@@ -34,6 +35,7 @@ pub struct WorldUpdate {
     pub world_state: WorldState,
 }
 
+/// This is the way that the robot can move
 #[derive(Serialize, Deserialize)]
 pub enum RobotMovement {
     Up,
@@ -47,11 +49,11 @@ impl Default for World {
         let mut data = vec![vec![Tile::Empty; WORLD_WIDTH]; WORLD_HEIGHT];
 
         let food_x = rand::thread_rng().gen_range(0..WORLD_WIDTH);
-        let food_y = rand::thread_rng().gen_range(0..WORLD_HEIGHT);
+        let food_y = rand::thread_rng().gen_range(1..WORLD_HEIGHT);
         data[food_y][food_x] = Tile::Food;
 
         let robot_x = rand::thread_rng().gen_range(0..WORLD_WIDTH);
-        let robot_y = rand::thread_rng().gen_range(0..WORLD_HEIGHT);
+        let robot_y = rand::thread_rng().gen_range(1..WORLD_HEIGHT);
         data[robot_y][robot_x] = Tile::Robot;
 
         Self { data }
@@ -132,7 +134,7 @@ mod tests {
     use super::World;
 
     #[test]
-    fn test_world() {
+    fn test_world_out_of_bounds() {
         let mut world = World::custom((10, 10), (12, 12));
         world.move_robot(crate::RobotMovement::Up).unwrap();
         // TODO see if constraints uphold of move robot function
