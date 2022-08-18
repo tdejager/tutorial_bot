@@ -2,6 +2,7 @@
 name = "tutorial_bot"
 version = "0.1.0"
 edition = "2021"
+default-run="bot_server"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,6 +17,10 @@ bracket-lib = "0.8.1"
 [[bin]]
 name = "bot_server"
 path = "src/server.rs"
+
+[[bin]]
+name = "bot_client"
+path = "src/bot_client.rs"
 
 [lib]
 name = "bot_lib"
