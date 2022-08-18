@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use bot_lib::{RobotMovement, World, WorldState, WorldUpdate};
+use bot_lib::{RobotMovement, World, WorldUpdate};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpListener,

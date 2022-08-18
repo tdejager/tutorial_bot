@@ -8,7 +8,7 @@ const WORLD_HEIGHT: usize = 100;
 const WORLD_WIDTH: usize = 100;
 
 /// Tile in the world, can either be a robot empty or food
-#[derive(Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum Tile {
     Robot,
     Food,
@@ -22,7 +22,7 @@ pub struct World {
 }
 
 /// State of the world
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum WorldState {
     FoundFood,
     Searching,
