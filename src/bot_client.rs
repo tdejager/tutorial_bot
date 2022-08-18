@@ -1,3 +1,5 @@
+/// This is the executable to write the client in
+
 /// The tokio::main macro just converts the main function into:
 ///fn main() {
 //     let mut rt = tokio::runtime::Runtime::new().unwrap();

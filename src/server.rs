@@ -38,7 +38,7 @@ async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
             .await
             .expect("failed to read data from socket");
 
-        // Deserialize it
+        // Deserialize it, note that we are using little-endian is a representation
         let size_of_package = usize::from_le_bytes(size);
 
         // Read the robot_movement package
@@ -62,6 +62,7 @@ async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
 
         // --- WRITE START ---
         let update = bincode::serialize(&update)?;
+        //.. again little-endian
         let size_le = usize::to_le_bytes(update.len());
         // First write size..
         socket.write_all(&size_le).await?;
@@ -72,6 +73,7 @@ async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
 }
 
 /// Small demo to demonstrate movement
+#[allow(dead_code)]
 fn demo(world: Arc<RwLock<World>>) -> tokio::task::JoinHandle<()> {
     // This spawns a seperate tokio task
     // Which is like a thread inside the tokio runtime
