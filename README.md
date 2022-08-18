@@ -27,7 +27,7 @@ We are using [anyhow](https://docs.rs/anyhow/latest/anyhow/) for easy error hand
 
 ## Assignments 
 
-1. The first goal is to familiarize yourself with the `lib.rs` code. To do this you need to complete a test that was written there that checks one of the constrainst from the world.
+1. The first goal is to familiarize yourself with the `lib.rs` code. To do this you need to complete a test that was written there that checks one of the constrainst from the `World`.
 2. The second goal is to create a client that navigate the robot to the food. 
 To do this you need to create a TCP client to connect to the server using tokio. 
 An example can be found: [hello-world](https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs).

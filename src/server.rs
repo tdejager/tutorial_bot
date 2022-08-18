@@ -102,7 +102,7 @@ fn spawn_tcp(world: Arc<RwLock<World>>) -> tokio::task::JoinHandle<()> {
 /// This ensures that we are inside the tokio run-time
 #[tokio::main]
 async fn main() {
-    // This creates a World object inside an atomic reference counted struct inside a Mutex
+    // This creates a World object inside an atomic reference counted struct inside a RwLock
     // this creates a thread-safe datastructure to be able to update
     // which is needed because we use it in both the GUI and the server potentially
     // read more on this at: https://tokio.rs/tokio/tutorial/shared-state

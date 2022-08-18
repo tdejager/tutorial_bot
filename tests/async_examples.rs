@@ -71,17 +71,21 @@ async fn tutorial_parallel() {
     println!("{} {}", x.unwrap(), y.unwrap());
 
     // Note that we could have also run `task_1.await; task_2.await` but this orders how we await
-    // the joins
+    // the joins, while the join does not have this restriction task_2 can finish before task_1
+    
+    // Another primitive that is often used is the tokio::select! this waits only for the first branch to be completed
+    // This is useful when working with cancellation see: https://tokio.rs/tokio/tutorial/select for more info
 }
 
 #[tokio::test]
 /// Final tutorial that teaches you about 'sharing' data between spawned tasks
 /// this is kinda the same as in Rust just using threads so you can also read
 /// the chapter: https://doc.rust-lang.org/stable/book/ch16-03-shared-state.html
+/// or: read more on this at: https://tokio.rs/tokio/tutorial/shared-state (for a tokio take on it)
 /// as a reference
 async fn tutorial_data_sharing() {
     // We created a reference counted value which lets us have multiple owners
-    // we use a ReadWrite lock to synchronize acces so that this is safe
+    // we use a ReadWrite lock to synchronize access so that this is safe
     // this is a common pattern when working with multithreaded code
     // You need to be able to copy it over threads somehow in this case the `Arc`
     // but you also need to synchronize access in this case the `RwLock`
