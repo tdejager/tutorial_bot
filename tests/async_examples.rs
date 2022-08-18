@@ -20,7 +20,9 @@ async fn multiply_stuff(x: u32, y: u32) -> u32 {
     x * y
 }
 
-/// This runs the test in the tokio test runner
+/// The first test with 2 simple await statements
+/// the #[tokio::test] attribute makes sure the function is run in the tokio_test
+/// runtime
 #[tokio::test]
 async fn tutorial_basics() {
     // First run this
@@ -34,7 +36,7 @@ async fn tutorial_basics() {
 async fn tutorial_basics2() {
     // First run this
     let calc = multiply_stuff(3, 3).await;
-    // .. then this
+    // .. then this for something
     println!("Use this value {}", calc);
 }
 
@@ -44,7 +46,7 @@ async fn tutorial_concurrent() {
     // The join is run concurrently
     let (x, y) = tokio::join!(multiply_stuff(3, 4), multiply_stuff(5, 6));
 
-    // This section was taken from the docs and is important!
+    // This section was taken from the docs of tokio::joint and is important:
 
     // By running all async expressions on the current task, the expressions are
     // able to run **concurrently** but not in **parallel**. This means all
@@ -55,12 +57,17 @@ async fn tutorial_concurrent() {
     //
 
     println!("{} {}", x, y);
+
+    // Often you don't care about parallelism in async/await code because the tasks
+    // are suspened when a `.await` is encountered so the scheduler can switch between the tasks
+    // this is called coopertive scheduling
 }
 
-/// This shows you an example how to run stuff in parralel
+/// This shows you an example how to run stuff in parallel
+/// like the previous stated we will use `spawn` to spawn parallel tasks
 #[tokio::test]
 async fn tutorial_parallel() {
-    // These return JoinHandle<()> we can wait for them to complete
+    // These return JoinHandle<()> we can wait for the task to complete
     // Spawn runs them in parallel when multithreaded runtime is being used
     // which is default for tokio when *not* using tokio::test
     let task_1 = tokio::spawn(async { multiply_stuff(3, 3).await });
@@ -111,7 +118,8 @@ async fn tutorial_data_sharing() {
     });
 
     t1.await.unwrap();
-    // Try removing an await and see what happens
+    // Small excercise: Try removing an t1|t2.await and see what happens
+    // why does this happen
     t2.await.unwrap();
 
     // Should be 20
