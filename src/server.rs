@@ -31,6 +31,22 @@ async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
 
     // In a loop, read data from the socket and write the data back.
     loop {
+        let state = world.read().unwrap().world_state();
+        let update = WorldUpdate {
+            world: world.read().unwrap().clone(),
+            world_state: state,
+        };
+
+        // --- WRITE START ---
+        let update = bincode::serialize(&update)?;
+        //.. again little-endian
+        let size_le = usize::to_le_bytes(update.len());
+        // First write size..
+        socket.write_all(&size_le).await?;
+        // ..Then the update
+        socket.write_all(&update).await?;
+        // -- WRITE END --
+
         // -- READ START --
         // Read the incoming package size
         socket
@@ -47,28 +63,13 @@ async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
             .read_exact(&mut robot_movement)
             .await
             .expect("failed to read data from socket");
-
         // -- READ END --
 
         // Deserialize using bincode
         let robot_movement: RobotMovement = bincode::deserialize(&robot_movement)?;
+
         // Move the actual robot
         world.write().unwrap().move_robot(robot_movement)?;
-        let state = world.read().unwrap().world_state();
-        let update = WorldUpdate {
-            world: world.read().unwrap().clone(),
-            world_state: state,
-        };
-
-        // --- WRITE START ---
-        let update = bincode::serialize(&update)?;
-        //.. again little-endian
-        let size_le = usize::to_le_bytes(update.len());
-        // First write size..
-        socket.write_all(&size_le).await?;
-        // ..Then the update
-        socket.write_all(&update).await?;
-        // -- WRITE END --
     }
 }
 
