@@ -8,7 +8,7 @@ const WORLD_HEIGHT: usize = 100;
 const WORLD_WIDTH: usize = 100;
 
 /// Tile in the world, can either be a robot empty or food
-#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug)]
 pub enum Tile {
     Robot,
     Food,
@@ -16,7 +16,7 @@ pub enum Tile {
 }
 
 /// Dictates where the robot is in the world
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct World {
     pub data: Vec<Vec<Tile>>,
 }
@@ -29,14 +29,14 @@ pub enum WorldState {
 }
 
 /// Update of the world to be sent over the wire
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct WorldUpdate {
     pub world: World,
     pub world_state: WorldState,
 }
 
 /// This is the way that the robot can move
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum RobotMovement {
     Up,
     Left,
