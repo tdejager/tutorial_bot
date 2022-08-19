@@ -79,7 +79,7 @@ async fn tutorial_parallel() {
 
     // Note that we could have also run `task_1.await; task_2.await` but this orders how we await
     // the joins, while the join does not have this restriction task_2 can finish before task_1
-    
+
     // Another primitive that is often used is the tokio::select! this waits only for the first branch to be completed
     // This is useful when working with cancellation see: https://tokio.rs/tokio/tutorial/select for more info
 }
@@ -111,6 +111,7 @@ async fn tutorial_data_sharing() {
 
     let shared_clone = shared.clone();
     let t2 = tokio::spawn(async move {
+        tokio::time::sleep(std::time::Duration::from_millis(3)).await;
         for _ in 0..10 {
             let mut a = shared_clone.write().await;
             *a += 1;
@@ -118,7 +119,7 @@ async fn tutorial_data_sharing() {
     });
 
     t1.await.unwrap();
-    // Small excercise: Try removing an t1|t2.await and see what happens
+    // Small excercise: Try removing an t2.await and see what happens
     // why does this happen
     t2.await.unwrap();
 
