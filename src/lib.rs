@@ -99,7 +99,7 @@ impl World {
         };
 
         // Check bounds
-        if new_y > WORLD_HEIGHT || new_x > WORLD_WIDTH {
+        if new_y >= WORLD_HEIGHT || new_x >= WORLD_WIDTH {
             return Err(anyhow::anyhow!("out of bounds"));
         }
 
