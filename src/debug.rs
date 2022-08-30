@@ -13,8 +13,9 @@ impl GameState for State {
         for (y, rows) in self.world.read().unwrap().data.iter().enumerate() {
             for (x, tile) in rows.iter().enumerate() {
                 match tile {
-                    crate::Tile::Robot => ctx.print(x, y, "R"),
-                    crate::Tile::Food => ctx.print(x, y, "F"),
+                    crate::Tile::Robot => ctx.print_color(x, y, RGB::from_f32(0.0, 1.0, 0.0), RGB::from_f32(0.0, 0.0, 0.0), "R"),
+                    crate::Tile::Food => ctx.print_color(x, y, RGB::from_f32(1.0, 0.0, 0.0), RGB::from_f32(0.0, 0.0, 0.0), "F"),
+                    crate::Tile::Wall => ctx.print(x, y, "#"),
                     crate::Tile::Empty => ctx.print_color(x, y, GRAY30, BLACK, "."),
                 }
             }

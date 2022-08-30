@@ -6,6 +6,7 @@ pub mod debug;
 // Constansts that dicate the world size
 const WORLD_HEIGHT: usize = 100;
 const WORLD_WIDTH: usize = 100;
+const N_WALLS: usize = 100;
 
 /// Tile in the world, can either be a robot empty or food
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug)]
@@ -13,6 +14,7 @@ pub enum Tile {
     Robot,
     Food,
     Empty,
+    Wall,
 }
 
 /// Dictates where the robot is in the world
@@ -55,6 +57,12 @@ impl Default for World {
         let robot_x = rand::thread_rng().gen_range(0..WORLD_WIDTH);
         let robot_y = rand::thread_rng().gen_range(1..WORLD_HEIGHT);
         data[robot_y][robot_x] = Tile::Robot;
+
+        for _ in 0..N_WALLS {
+            let wall_x = rand::thread_rng().gen_range(0..WORLD_WIDTH);
+            let wall_y = rand::thread_rng().gen_range(1..WORLD_HEIGHT);
+            data[wall_y][wall_x] = Tile::Wall;
+        }
 
         Self { data }
     }
@@ -101,6 +109,10 @@ impl World {
         // Check bounds
         if new_y >= WORLD_HEIGHT || new_x >= WORLD_WIDTH {
             return Err(anyhow::anyhow!("out of bounds"));
+        }
+
+        if self.data[new_x][new_y] == Tile::Wall {
+            return Err(anyhow::anyhow!("Boop, hitting a wall"));
         }
 
         // Update
