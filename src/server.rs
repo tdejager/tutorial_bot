@@ -11,42 +11,43 @@ use tokio::{
 
 /// This method is run per client and moves the robot with the commands that have been sent
 async fn server_loop(world: Arc<RwLock<World>>, mut socket: TcpStream) -> anyhow::Result<()> {
-    // This will represent the inbound size of the package
-    let mut size = [0; std::mem::size_of::<usize>()];
-    let state = world.read().unwrap().world_state();
-    let update = WorldUpdate {
-        world: world.read().unwrap().clone(),
-        world_state: state,
-    };
+    loop {
+        // This will represent the inbound size of the package
+        let mut size = [0; std::mem::size_of::<usize>()];
+        let state = world.read().unwrap().world_state();
+        let update = WorldUpdate {
+            world: world.read().unwrap().clone(),
+            world_state: state,
+        };
 
-    // --- WRITE START ---
-    let update = bincode::serialize(&update)?;
-    //.. again little-endian
-    let size_le = usize::to_le_bytes(update.len());
-    // First write size..
-    socket.write_all(&size_le).await?;
-    // ..Then the update
-    socket.write_all(&update).await?;
-    // -- WRITE END --
+        // --- WRITE START ---
+        let update = bincode::serialize(&update)?;
+        //.. again little-endian
+        let size_le = usize::to_le_bytes(update.len());
+        // First write size..
+        socket.write_all(&size_le).await?;
+        // ..Then the update
+        socket.write_all(&update).await?;
+        // -- WRITE END --
 
-    // -- READ START --
-    // Read the incoming package size
-    socket.read_exact(&mut size).await?;
+        // -- READ START --
+        // Read the incoming package size
+        socket.read_exact(&mut size).await?;
 
-    // Deserialize it, note that we are using little-endian is a representation
-    let size_of_package = usize::from_le_bytes(size);
+        // Deserialize it, note that we are using little-endian is a representation
+        let size_of_package = usize::from_le_bytes(size);
 
-    // Read the robot_movement package
-    let mut robot_movement = vec![0; size_of_package];
-    socket.read_exact(&mut robot_movement).await?;
-    // -- READ END --
+        // Read the robot_movement package
+        let mut robot_movement = vec![0; size_of_package];
+        socket.read_exact(&mut robot_movement).await?;
+        // -- READ END --
 
-    // Deserialize using bincode
-    let robot_movement: RobotMovement = bincode::deserialize(&robot_movement)?;
+        // Deserialize using bincode
+        let robot_movement: RobotMovement = bincode::deserialize(&robot_movement)?;
 
-    // Move the actual robot
-    world.write().unwrap().move_robot(robot_movement)?;
-    Ok(())
+        // Move the actual robot
+        world.write().unwrap().move_robot(robot_movement)?;
+    }
 }
 
 async fn tcp_server(world: Arc<RwLock<World>>) -> anyhow::Result<()> {
